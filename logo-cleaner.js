@@ -18,24 +18,35 @@ function cleanLogo() {
                 ctx.drawImage(img, 0, 0);
                 
                 // Logo bölgesinin koordinatlarını belirle
-                const logoWidth = Math.round(canvas.width * 0.2);  // Resmin %20'si
-                const logoHeight = Math.round(canvas.height * 0.1); // Resmin %10'u
-                const logoX = canvas.width - logoWidth - 5;
-                const logoY = canvas.height - logoHeight - 5;
+                const logoWidth = Math.round(canvas.width * 0.25);  // Logo genişliği
+                const logoHeight = Math.round(canvas.height * 0.15); // Logo yüksekliği
+                const logoX = canvas.width - logoWidth;
+                const logoY = canvas.height - logoHeight;
                 
-                // Logo bölgesinin üstünden renk örneği al
-                const sampleY = logoY - 5;
-                let lastColor = null;
+                // Logo bölgesinin etrafından örnekler al
+                const samples = [];
+                const sampleSize = 10;
                 
-                // Logo bölgesini satır satır doldur
-                for (let y = logoY; y < logoY + logoHeight + 10; y++) {
-                    // Her satır için soldan renk örneği al
-                    const sampleData = ctx.getImageData(logoX - 20, y, 1, 1).data;
-                    const currentColor = `rgb(${sampleData[0]}, ${sampleData[1]}, ${sampleData[2]})`;
-                    
-                    // Rengi kullan
-                    ctx.fillStyle = currentColor;
-                    ctx.fillRect(logoX, y, logoWidth + 10, 1);
+                // Üstten örnekler
+                const topData = ctx.getImageData(logoX, logoY - sampleSize, logoWidth, sampleSize);
+                
+                // Soldan örnekler
+                const leftData = ctx.getImageData(logoX - sampleSize, logoY, sampleSize, logoHeight);
+                
+                // Her piksel için en yakın örneği kullan
+                for (let y = logoY; y < logoY + logoHeight; y++) {
+                    for (let x = logoX; x < logoX + logoWidth; x++) {
+                        // En yakın örnek pikseli bul
+                        const sourceX = x - logoWidth;
+                        const sourceY = y;
+                        
+                        // Örnek pikseli al
+                        const sampleData = ctx.getImageData(sourceX, sourceY, 1, 1).data;
+                        
+                        // Pikseli yerleştir
+                        ctx.fillStyle = `rgb(${sampleData[0]}, ${sampleData[1]}, ${sampleData[2]})`;
+                        ctx.fillRect(x, y, 1, 1);
+                    }
                 }
                 
                 const newImage = canvas.toDataURL();
