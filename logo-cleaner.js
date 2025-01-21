@@ -18,28 +18,24 @@ function cleanLogo() {
                 ctx.drawImage(img, 0, 0);
                 
                 // Logo bölgesinin koordinatlarını belirle
-                const logoWidth = Math.round(canvas.width * 0.12);  // Logo genişliği
-                const logoHeight = Math.round(canvas.height * 0.12); // Logo yüksekliği
-                const logoX = canvas.width - logoWidth - 5;  // Logo X pozisyonu
-                const logoY = canvas.height - logoHeight - 5; // Logo Y pozisyonu
+                const logoWidth = Math.round(canvas.width * 0.2);  // Resmin %20'si
+                const logoHeight = Math.round(canvas.height * 0.1); // Resmin %10'u
+                const logoX = canvas.width - logoWidth - 5;
+                const logoY = canvas.height - logoHeight - 5;
                 
-                // Logo bölgesindeki pikselleri analiz et
-                const imageData = ctx.getImageData(logoX - 10, logoY - 10, 1, 1);
-                const color = {
-                    r: imageData.data[0],
-                    g: imageData.data[1],
-                    b: imageData.data[2]
-                };
+                // Logo bölgesinin üstünden renk örneği al
+                const sampleY = logoY - 5;
+                let lastColor = null;
                 
-                // Content-aware fill efekti
-                for (let y = logoY - 5; y < logoY + logoHeight + 5; y++) {
-                    for (let x = logoX - 5; x < logoX + logoWidth + 5; x++) {
-                        const sampleX = x - logoWidth;
-                        const sampleY = y;
-                        const sample = ctx.getImageData(sampleX, sampleY, 1, 1).data;
-                        ctx.fillStyle = `rgb(${sample[0]}, ${sample[1]}, ${sample[2]})`;
-                        ctx.fillRect(x, y, 1, 1);
-                    }
+                // Logo bölgesini satır satır doldur
+                for (let y = logoY; y < logoY + logoHeight + 10; y++) {
+                    // Her satır için soldan renk örneği al
+                    const sampleData = ctx.getImageData(logoX - 20, y, 1, 1).data;
+                    const currentColor = `rgb(${sampleData[0]}, ${sampleData[1]}, ${sampleData[2]})`;
+                    
+                    // Rengi kullan
+                    ctx.fillStyle = currentColor;
+                    ctx.fillRect(logoX, y, logoWidth + 10, 1);
                 }
                 
                 const newImage = canvas.toDataURL();
