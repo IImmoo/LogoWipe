@@ -17,20 +17,49 @@ function cleanLogo() {
                 // Önce tüm resmi çiz
                 ctx.drawImage(img, 0, 0);
                 
-                // Logo bölgesini temizle - boyutları büyüttüm
-                ctx.fillStyle = '#FFFFFF';
-                const logoWidth = Math.round(canvas.width * 0.25);  // %25'e çıkardım
-                const logoHeight = Math.round(canvas.height * 0.25); // %25'e çıkardım
-                
-                // Ana logo alanını temizle
-                ctx.fillRect(
-                    canvas.width - logoWidth,  // Sağ kenara tam dayalı
-                    canvas.height - logoHeight, // Alt kenara tam dayalı
-                    logoWidth,
-                    logoHeight
+                // Resmin sağ alt köşesinden örnek renk al
+                const sampleSize = 5;
+                const imageData = ctx.getImageData(
+                    canvas.width - logoWidth - 30, // Logo bölgesinin solundan
+                    canvas.height - logoHeight - 30, // Logo bölgesinin üstünden
+                    sampleSize,
+                    sampleSize
                 );
                 
-                // Ekstra güvenlik için biraz daha geniş alan temizle
+                // Ortalama rengi hesapla
+                let r = 0, g = 0, b = 0;
+                for (let i = 0; i < imageData.data.length; i += 4) {
+                    r += imageData.data[i];
+                    g += imageData.data[i + 1];
+                    b += imageData.data[i + 2];
+                }
+                const pixelCount = imageData.data.length / 4;
+                r = Math.round(r / pixelCount);
+                g = Math.round(g / pixelCount);
+                b = Math.round(b / pixelCount);
+                
+                // Logo bölgesini çevreden alınan renkle doldur
+                const logoWidth = Math.round(canvas.width * 0.15);
+                const logoHeight = Math.round(canvas.height * 0.15);
+                
+                // Gradyan oluştur
+                const gradient = ctx.createRadialGradient(
+                    canvas.width - logoWidth/2,
+                    canvas.height - logoHeight/2,
+                    0,
+                    canvas.width - logoWidth/2,
+                    canvas.height - logoHeight/2,
+                    logoWidth
+                );
+                
+                gradient.addColorStop(0, `rgb(${r},${g},${b})`);
+                gradient.addColorStop(1, ctx.getImageData(
+                    canvas.width - logoWidth - 40,
+                    canvas.height - logoHeight - 40,
+                    1, 1
+                ).data.slice(0, 3).join(','));
+                
+                ctx.fillStyle = gradient;
                 ctx.fillRect(
                     canvas.width - logoWidth - 10,
                     canvas.height - logoHeight - 10,
