@@ -16,15 +16,25 @@ function cleanLogo() {
                 
                 ctx.drawImage(img, 0, 0);
                 
-                // Logo bölgesini temizle
+                // Logo bölgesini temizle - boyutları ve konumu ayarladım
                 ctx.fillStyle = '#FFFFFF';
-                const logoWidth = Math.round(canvas.width * 0.2);
-                const logoHeight = Math.round(canvas.height * 0.1);
+                const logoWidth = Math.round(canvas.width * 0.15);  // %15'e düşürdüm
+                const logoHeight = Math.round(canvas.height * 0.15); // %15'e düşürdüm
                 ctx.fillRect(
-                    canvas.width - logoWidth - 10,
-                    canvas.height - logoHeight - 10,
+                    canvas.width - logoWidth - 5,  // Sağ kenardan uzaklığı azalttım
+                    canvas.height - logoHeight - 5, // Alt kenardan uzaklığı azalttım
                     logoWidth,
                     logoHeight
+                );
+                
+                // Kenarları yumuşatmak için
+                ctx.fillStyle = '#FFFFFF';
+                ctx.globalAlpha = 0.5;
+                ctx.fillRect(
+                    canvas.width - logoWidth - 7,
+                    canvas.height - logoHeight - 7,
+                    logoWidth + 4,
+                    logoHeight + 4
                 );
                 
                 const newImage = canvas.toDataURL();
