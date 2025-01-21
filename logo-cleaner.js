@@ -14,27 +14,28 @@ function cleanLogo() {
                 canvas.width = img.naturalWidth || img.width;
                 canvas.height = img.naturalHeight || img.height;
                 
+                // Önce tüm resmi çiz
                 ctx.drawImage(img, 0, 0);
                 
-                // Logo bölgesini temizle - boyutları ve konumu ayarladım
+                // Logo bölgesini temizle - boyutları büyüttüm
                 ctx.fillStyle = '#FFFFFF';
-                const logoWidth = Math.round(canvas.width * 0.15);  // %15'e düşürdüm
-                const logoHeight = Math.round(canvas.height * 0.15); // %15'e düşürdüm
+                const logoWidth = Math.round(canvas.width * 0.25);  // %25'e çıkardım
+                const logoHeight = Math.round(canvas.height * 0.25); // %25'e çıkardım
+                
+                // Ana logo alanını temizle
                 ctx.fillRect(
-                    canvas.width - logoWidth - 5,  // Sağ kenardan uzaklığı azalttım
-                    canvas.height - logoHeight - 5, // Alt kenardan uzaklığı azalttım
+                    canvas.width - logoWidth,  // Sağ kenara tam dayalı
+                    canvas.height - logoHeight, // Alt kenara tam dayalı
                     logoWidth,
                     logoHeight
                 );
                 
-                // Kenarları yumuşatmak için
-                ctx.fillStyle = '#FFFFFF';
-                ctx.globalAlpha = 0.5;
+                // Ekstra güvenlik için biraz daha geniş alan temizle
                 ctx.fillRect(
-                    canvas.width - logoWidth - 7,
-                    canvas.height - logoHeight - 7,
-                    logoWidth + 4,
-                    logoHeight + 4
+                    canvas.width - logoWidth - 10,
+                    canvas.height - logoHeight - 10,
+                    logoWidth + 20,
+                    logoHeight + 20
                 );
                 
                 const newImage = canvas.toDataURL();
