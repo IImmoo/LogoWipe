@@ -17,55 +17,30 @@ function cleanLogo() {
                 // Önce tüm resmi çiz
                 ctx.drawImage(img, 0, 0);
                 
-                // Resmin sağ alt köşesinden örnek renk al
-                const sampleSize = 5;
-                const imageData = ctx.getImageData(
-                    canvas.width - logoWidth - 30, // Logo bölgesinin solundan
-                    canvas.height - logoHeight - 30, // Logo bölgesinin üstünden
-                    sampleSize,
-                    sampleSize
-                );
+                // Logo bölgesinin koordinatlarını belirle
+                const logoWidth = Math.round(canvas.width * 0.12);  // Logo genişliği
+                const logoHeight = Math.round(canvas.height * 0.12); // Logo yüksekliği
+                const logoX = canvas.width - logoWidth - 5;  // Logo X pozisyonu
+                const logoY = canvas.height - logoHeight - 5; // Logo Y pozisyonu
                 
-                // Ortalama rengi hesapla
-                let r = 0, g = 0, b = 0;
-                for (let i = 0; i < imageData.data.length; i += 4) {
-                    r += imageData.data[i];
-                    g += imageData.data[i + 1];
-                    b += imageData.data[i + 2];
+                // Logo bölgesindeki pikselleri analiz et
+                const imageData = ctx.getImageData(logoX - 10, logoY - 10, 1, 1);
+                const color = {
+                    r: imageData.data[0],
+                    g: imageData.data[1],
+                    b: imageData.data[2]
+                };
+                
+                // Content-aware fill efekti
+                for (let y = logoY - 5; y < logoY + logoHeight + 5; y++) {
+                    for (let x = logoX - 5; x < logoX + logoWidth + 5; x++) {
+                        const sampleX = x - logoWidth;
+                        const sampleY = y;
+                        const sample = ctx.getImageData(sampleX, sampleY, 1, 1).data;
+                        ctx.fillStyle = `rgb(${sample[0]}, ${sample[1]}, ${sample[2]})`;
+                        ctx.fillRect(x, y, 1, 1);
+                    }
                 }
-                const pixelCount = imageData.data.length / 4;
-                r = Math.round(r / pixelCount);
-                g = Math.round(g / pixelCount);
-                b = Math.round(b / pixelCount);
-                
-                // Logo bölgesini çevreden alınan renkle doldur
-                const logoWidth = Math.round(canvas.width * 0.15);
-                const logoHeight = Math.round(canvas.height * 0.15);
-                
-                // Gradyan oluştur
-                const gradient = ctx.createRadialGradient(
-                    canvas.width - logoWidth/2,
-                    canvas.height - logoHeight/2,
-                    0,
-                    canvas.width - logoWidth/2,
-                    canvas.height - logoHeight/2,
-                    logoWidth
-                );
-                
-                gradient.addColorStop(0, `rgb(${r},${g},${b})`);
-                gradient.addColorStop(1, ctx.getImageData(
-                    canvas.width - logoWidth - 40,
-                    canvas.height - logoHeight - 40,
-                    1, 1
-                ).data.slice(0, 3).join(','));
-                
-                ctx.fillStyle = gradient;
-                ctx.fillRect(
-                    canvas.width - logoWidth - 10,
-                    canvas.height - logoHeight - 10,
-                    logoWidth + 20,
-                    logoHeight + 20
-                );
                 
                 const newImage = canvas.toDataURL();
                 img.src = newImage;
